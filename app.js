@@ -3,16 +3,16 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const https = require('https');
+const path = require('path');
 const server = https.createServer({
-    key: fs.readFileSync('ssl/selfsigned.key'),
-    cert: fs.readFileSync('ssl/selfsigned.crt'),
+    key: fs.readFileSync(__dirname+'/ssl/selfsigned.key'),
+    cert: fs.readFileSync(__dirname+'/ssl/selfsigned.crt'),
     requestCert: false,
     rejectUnauthorized: false
 }, app);
 const io = require('socket.io').listen(server, {
     'transports': ['websocket']
 });
-const path = require('path');
 const ejs = require('ejs');
 
 // Variabili d'ambiente
@@ -29,9 +29,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Controller
-fs.readdirSync('./controllers').forEach(function (file) {
+fs.readdirSync(__dirname+'/controllers').forEach(function (file) {
     if(file.substr(-3) == '.js') {
-        route = require('./controllers/' + file);
+        route = require(__dirname+'/controllers/' + file);
         route.controller(app, io);
     }
 });
@@ -58,7 +58,7 @@ process.on('uncaughtException', function (err) {
 
     console.log(time+' - Errore: ', err);
 
-    fs.open('./logs/'+y+m+d+'-err.log', 'a', function(err, fd){
+    fs.open(__dirname+'/logs/'+y+m+d+'-err.log', 'a', function(err, fd){
         fs.write(fd, string, 0, 'utf-8', function(err){
             fs.closeSync(fd);
         });
