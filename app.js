@@ -10,10 +10,10 @@ const server = https.createServer({
     requestCert: false,
     rejectUnauthorized: false
 }, app);
+
 const io = require('socket.io').listen(server, {
     'transports': ['websocket']
 });
-const ejs = require('ejs');
 
 // Variabili d'ambiente
 app.locals.server   = '127.0.0.1';
