@@ -9,8 +9,6 @@ module.exports = {
       con.connect(err => {
          if (err) {
             con.end();
-            const time = new Date().toLocaleString();
-            console.log(time + ' - Problema di connessione al DB NCR (allarmi), tentativo di riconnessione in corso');
             callback(err, null);
          }
          else {

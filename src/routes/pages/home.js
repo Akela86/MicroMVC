@@ -3,7 +3,7 @@ const router = require('express').Router();
 
 router.get('/', (req, res) => {
    const obj = {
-      title: 'Titolo Pagina'
+      title: 'Page Title'
    };
 
    res.render('main', obj);
