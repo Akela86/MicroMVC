@@ -7,14 +7,24 @@
     "body-parser": "^1.18.2",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "helmet": "^3.21.2",
     "mysql": "^2.15.0",
-    "node-windows": "^0.1.14"
+    "node-windows": "^0.1.14",
+    "sanitize": "^2.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0"
+  },
   "scripts": {
-    "start": "node app",
-    "installer": "node install",
-    "uninstaller": "node uninstall"
+    "start": "NODE_ENV=production node ./app",
+    "dev": "nodemon app",
+    "installer": "node src/install",
+    "uninstaller": "node src/uninstall"
   },
   "author": "Fabio",
   "license": "ISC"

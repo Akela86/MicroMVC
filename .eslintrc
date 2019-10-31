@@ -38,9 +38,6 @@
             "multi-or-nest"
         ],
         "no-console": "off",
-        "no-undef": "off",
-        "plugins": [
-            "vue"
-        ]
+        "no-undef": "off"
     }
 }

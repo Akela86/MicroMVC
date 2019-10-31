@@ -1,66 +1,45 @@
+'use strict';
 const fs = require('fs');
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const https = require('https');
 const path = require('path');
+
+const { writeError } = require('./src/libs/writeLog');
+
+const app = express();
+app.use(helmet());
+
 const server = https.createServer({
-    key: fs.readFileSync(__dirname+'/ssl/selfsigned.key'),
-    cert: fs.readFileSync(__dirname+'/ssl/selfsigned.crt'),
-    requestCert: false,
-    rejectUnauthorized: false
+   key: fs.readFileSync(path.join(__dirname, '/ssl/selfsigned.key')),
+   cert: fs.readFileSync(path.join(__dirname, '/ssl/selfsigned.crt')),
+   requestCert: false,
+   rejectUnauthorized: false
 }, app);
 
-const io = require('socket.io').listen(server, {
-    'transports': ['websocket']
-});
+const { env, port } = require('./config/app');
+process.env.NODE_ENV = env;
 
-// Variabili d'ambiente
-app.locals.server   = '127.0.0.1';
-app.locals.protocol = 'https';
-app.locals.port     = 3000;
-
-app.set('port', process.env.PORT || app.locals.port);
-app.set('views', __dirname + '/views');
+app.set('port', port);
+app.set('views', path.join(__dirname, './src/views'));
 app.set('view engine', 'ejs');
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(require('sanitize').middleware);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Controller
-fs.readdirSync(__dirname+'/controllers').forEach(function (file) {
-    if(file.substr(-3) == '.js') {
-        route = require(__dirname+'/controllers/' + file);
-        route.controller(app, io);
-    }
-});
-
-// Error 404
-app.get('*', function (req, res) {
-    res.render('404');
-});
+// Routes
+app.use(require('./src/routes'));
 
 // Server HTTPs
-server.listen(app.get('port'), function(){
-    var time =  new Date().toLocaleString();
-    console.log(time+' - Server HTTPs in ascolto sulla porta '+app.get('port'));
+server.listen(app.get('port'), () => {
+   const time = new Date().toLocaleString();
+   console.log(`${time} - Server ${process.env.NODE_ENV} in ascolto sulla porta ${app.get('port')}`);
 });
 
 // Gestione Errori e Logs
-process.on('uncaughtException', function (err) {
-    var time =  new Date().toLocaleString();
-    var string = time+' - '+err+'\r\n';
-    var fd = new Date(),
-        y    = fd.toLocaleString().substr(2,2),
-        m    = fd.getMonth()+1 < 10 ? '0'+(fd.getMonth()+1) : fd.getMonth()+1,
-        d    = fd.getDate() < 10 ? '0'+fd.getDate() : fd.getDate();
-
-    console.log(time+' - Errore: ', err);
-
-    fs.open(__dirname+'/logs/'+y+m+d+'-err.log', 'a', function(err, fd){
-        fs.write(fd, string, 0, 'utf-8', function(err){
-            fs.closeSync(fd);
-        });
-    });
+process.on('uncaughtException', err => {
+   writeError(err);
 });
