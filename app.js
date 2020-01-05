@@ -39,7 +39,6 @@ server.listen(app.get('port'), () => {
    console.log(`${time} - Server ${process.env.NODE_ENV} in ascolto sulla porta ${app.get('port')}`);
 });
 
-// Gestione Errori e Logs
-process.on('uncaughtException', err => {
-   writeError(err);
-});
+// Uncauch errors handling
+process.on('uncaughtException', writeError);
+process.on('unhandledRejection', writeError);
