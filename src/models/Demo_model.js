@@ -1,10 +1,10 @@
 'use strict';
 const mysql = require('mysql');
-const db = require('../config/database').ncr;
+const { connection } = require('../config/database');
 
 module.exports = {
    getUsers (callback) {
-      const con = mysql.createConnection(db);
+      const con = mysql.createConnection(connection);
 
       con.connect(err => {
          if (err) {
