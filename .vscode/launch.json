@@ -7,8 +7,9 @@
       {
          "type": "node",
          "request": "launch",
-         "name": "Avvia programma",
-         "program": "${workspaceFolder}\\app.js"
+         "name": "Launch program",
+         "program": "${workspaceFolder}/app.js",
+         "envFile": "${workspaceFolder}/.env"
       }
    ]
 }

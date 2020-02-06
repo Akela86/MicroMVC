@@ -5,24 +5,31 @@
   "main": "app.js",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "ejs": "^2.5.7",
+    "ejs": "^2.7.4",
     "express": "^4.16.2",
     "helmet": "^3.21.2",
-    "mysql": "^2.15.0",
+    "mysql": "^2.18.1",
     "node-windows": "^0.1.14",
     "sanitize": "^2.1.0"
   },
   "devDependencies": {
-    "eslint": "^6.6.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.8.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-mocha": "^6.2.2",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.0",
+    "mocha": "^7.0.0"
   },
   "scripts": {
-    "start": "NODE_ENV=production node ./app",
-    "dev": "nodemon app",
+    "start": "node ./app",
+    "dev": "node -r dotenv/config ./app",
+    "test": "mocha",
+    "nodemon": "nodemon app",
     "installer": "node src/install",
     "uninstaller": "node src/uninstall"
   },

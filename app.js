@@ -1,9 +1,11 @@
 'use strict';
+const { env, port } = require('./config/app');
+
 const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const https = require('https');
+const server = env === 'production' ? require('https') : require('http');
 const path = require('path');
 
 const { writeError } = require('./src/libs/writeLog');
@@ -11,15 +13,12 @@ const { writeError } = require('./src/libs/writeLog');
 const app = express();
 app.use(helmet());
 
-const server = https.createServer({
-   key: fs.readFileSync(path.join(__dirname, '/ssl/selfsigned.key')),
-   cert: fs.readFileSync(path.join(__dirname, '/ssl/selfsigned.crt')),
+const serverInstance = server.createServer({
+   key: fs.readFileSync(path.join(__dirname, '/certs/selfsigned.key')),
+   cert: fs.readFileSync(path.join(__dirname, '/certs/selfsigned.crt')),
    requestCert: false,
    rejectUnauthorized: false
 }, app);
-
-const { env, port } = require('./config/app');
-process.env.NODE_ENV = env;
 
 app.set('port', port);
 app.set('views', path.join(__dirname, './src/views'));
@@ -34,11 +33,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require('./src/routes'));
 
 // Server HTTPs
-server.listen(app.get('port'), () => {
-   const time = new Date().toLocaleString();
-   console.log(`${time} - Server ${process.env.NODE_ENV} in ascolto sulla porta ${app.get('port')}`);
-});
+if (!module.parent) { // Directly
+   serverInstance.listen(app.get('port'), () => {
+      const time = new Date().toLocaleString();
+      console.log(`${time} - Server ${env === 'production' ? 'HTTPS' : 'HTTP'} ${env} listening on port ${app.get('port')}`);
+   });
+}
+else { // As module
+   module.exports = serverInstance;
+}
 
-// Uncauch errors handling
+// Uncaught errors handling
 process.on('uncaughtException', writeError);
 process.on('unhandledRejection', writeError);

@@ -1,4 +1,4 @@
 module.exports = {
-   port: 3000,
-   env: 'development'
+   port: process.env.PORT || 3001,
+   env: process.env.NODE_ENV || 'development'
 };
